@@ -1,0 +1,17 @@
+# Environment file
+.env
+
+# VS Code
+/.vscode
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Google API credentials
+Movies-3816b5a76879.json
+
+# Data files
+/data
+
+# Jupyter
+.ipynb_checkpoints
