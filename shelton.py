@@ -36,16 +36,16 @@ class Shelton(commands.Cog):
         self.current_date = datetime.today().strftime("%d/%m/%Y")
 
         with open("data/user_info.csv", "r") as f:
-            user_info = list(csv.reader(f))[1:]
+            user_info = list(csv.reader(f))
         self.user_name_map = {}
         for x in user_info:
             self.user_name_map[x[1]] = x[0]
 
-        with open(f"data/next_discussion.csv", "r") as f:
-            next_discussion = list(csv.reader(f))[0]
-        self.current_title = next_discussion[0]
-        self.current_type = next_discussion[1]
-        self.current_chooser = next_discussion[2]
+        with open(f"data/next_discussion_info.csv", "r") as f:
+            next_discussion_info = list(csv.reader(f))[0]
+        self.current_title = next_discussion_info[0]
+        self.current_type = next_discussion_info[1]
+        self.current_chooser = next_discussion_info[2]
 
         scope = ["https://spreadsheets.google.com/feeds",
                 "https://www.googleapis.com/auth/spreadsheets",
@@ -114,7 +114,7 @@ class Shelton(commands.Cog):
                                 body={'values': [[self.current_title, self.current_type, self.current_date, self.current_chooser]]}
                             )
                             with open("data/Discussions.csv", "a") as f:
-                                f.write(f"{self.current_title},{self.current_type},{self.current_date},{self.current_chooser}" + "\n")
+                                f.write(f"\"{self.current_title}\",{self.current_type},{self.current_date},{self.current_chooser}" + "\n")
                             for p in self.participants:
                                 self.sheet.values_append(
                                     self.user_name_map[p.name],
@@ -122,7 +122,7 @@ class Shelton(commands.Cog):
                                     body={'values': [[self.current_title, self.scores[p.name]]]}
                                 )
                                 with open(f"data/user_scores/{self.user_name_map[p.name]}.csv", "a") as f:
-                                    f.write(f"{self.current_title},{self.scores[p.name]:.2f}" + "\n")
+                                    f.write(f"\"{self.current_title}\",{self.scores[p.name]:.2f}" + "\n")
 
                         for k,v in self.scores.items():
                             await self.channels["scores"].send("**{}**: {:.2f}".format(k, v))
@@ -173,6 +173,7 @@ class Shelton(commands.Cog):
     async def initial_score(self, ctx, *args):
         await self.initialize_scoring(args, "initial")
 
+
     @commands.command(name="final-score",
                       brief="Handle final scoring process",
                       description="Run the command to start scoring. The bot will DM you for a response. Unless explicitly given, participants will be taken from whoever is in the General voice channel.",
@@ -181,14 +182,19 @@ class Shelton(commands.Cog):
         await self.initialize_scoring(args, "final")
 
 
-    @bot.command(name="choose-next-movie",
-                brief="Register the next movie",
-                description="Adds the next movie to the database. The bot will help you find the movie unless you add the year to the command.",
-                usage="\"<title>\" [year] <chooser>")
-    async def choose_next_movie(ctx, *args):
-        # Setup guild and channels
-        guild = utils.discord.get_guild(bot, GUILD)
-        bot_info_channel = utils.discord.get_channel(guild, "bot-info")
+    @commands.command(name="next",
+                      brief="Register the next discussion",
+                      description="Register the next discussion",
+                      usage="!next \"<title>\" <type> <chooser>")
+    async def next(self, ctx, *args):
+        if len(args) != 3:
+            await self.channels["bot-info"].send("It is !next \"<title>\" <type> <chooser>")
+            return
+        with open("data/next_discussion_info.csv", "w") as f:
+            f.write(f"\"{args[0]}\",{args[1]},{args[2]}")
+
+        await self.channels["bot-info"].send(f"Yooo, we {args[1]}ing {args[0]} next")
+
 
     @commands.command(name="shutdown",
                       brief="Shut the bot down",
