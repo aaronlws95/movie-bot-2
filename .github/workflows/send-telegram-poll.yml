@@ -1,0 +1,34 @@
+name: Send Telegram Weekend Poll
+
+on:
+  schedule:
+    # Every Monday at 00:00 GMT+8
+    # GitHub Actions uses UTC, so this is Sunday 16:00 UTC
+    - cron: '0 16 * * 0'
+
+  # Optional manual trigger
+  workflow_dispatch:
+
+jobs:
+  send-poll:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-telegram-bot python-dotenv pytz apscheduler
+
+      - name: Run Telegram poll script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python run_telegram_poll.py
