@@ -31,4 +31,4 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          python run_telegram_poll.py
+          python run_telegram_poll.py --send_poll
