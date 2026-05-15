@@ -6,11 +6,10 @@ import pytz
 import asyncio
 import argparse
 
-MOVIE_CHAT_ID = "-323399540"
-
 # Environment
 load_dotenv()
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+MOVIE_CHAT_ID = os.getenv("MOVIE_TELEGRAM_ID")
 
 CHAT_ID = MOVIE_CHAT_ID
 
@@ -77,7 +76,7 @@ async def check_poll():
     # 2. Check for Unanimous Winners (Message A)
     if unanimous_options:
         categories = " or ".join(unanimous_options)
-        await bot.send_message(CHAT_ID, f"We on baby. {categories}")
+        await bot.send_message(CHAT_ID, f"We on baby. {categories}. ")
         await bot.unpin_chat_message(CHAT_ID, chat.pinned_message.message_id)
         return
 

@@ -28,5 +28,6 @@ jobs:
       - name: Run Telegram check script
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          MOVIE_TELEGRAM_ID: ${{ secrets.MOVIE_TELEGRAM_ID }}
         run: |
           python run_telegram_poll.py --check_poll
