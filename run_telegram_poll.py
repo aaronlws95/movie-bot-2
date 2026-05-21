@@ -80,12 +80,18 @@ async def check_poll():
         await bot.unpin_chat_message(CHAT_ID, chat.pinned_message.message_id)
         return
 
-    # 3. Thursday Deadline (Message C)
+    # 3. Unique Voters, No Unanimity (Split Vote)
+    if total_voters >= 4:
+        await bot.send_message(CHAT_ID, f"Looks like we offz suckas.")
+        await bot.unpin_chat_message(CHAT_ID, chat.pinned_message.message_id)
+        return
+    
+    # 4. Thursday Deadline (Message C)
     if is_thursday:
         # Note: We do NOT unpin here, so it keeps checking Fri/Sat
         await bot.send_message(CHAT_ID, "Somebody needs to vote soon or we gonna have trouble.")
         return
-
+    
     print("Criteria not met, checking again tomorrow.") 
 
 if __name__ == "__main__":
